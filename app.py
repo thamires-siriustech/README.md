@@ -38,8 +38,12 @@ except (FileNotFoundError, pd.errors.ParserError, OSError) as error:
     st.exception(error)
     st.stop()
 
-rows_without_price = int(raw_data.attrs.get("rows_without_price", 0))
+rows_without_price = int(raw_data["price"].isna().sum())
 data = raw_data.dropna(subset=["price"]).copy()
+
+if data.empty:
+    st.error("A base não contém anúncios com preço válido para analisar.")
+    st.stop()
 
 st.title("Análise exploratória de anúncios de veículos")
 st.markdown(
